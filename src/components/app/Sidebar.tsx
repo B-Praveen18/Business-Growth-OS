@@ -1,7 +1,8 @@
+import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { navGroups, bottomNav } from "@/lib/nav";
-import { company } from "@/lib/mock-data";
+import { getCurrentUser, User } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { Sparkles, X } from "lucide-react";
 
@@ -13,6 +14,23 @@ export function Sidebar({
   onClose: () => void;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    setUser(getCurrentUser());
+  }, []);
+
+  const initials = user
+    ? user.name
+        .split(" ")
+        .map((word) => word[0] ?? "")
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "NW";
+
+  const profileName = user?.name ?? "Guest";
+  const profileRole = user?.role ?? "User";
 
   const content = (
     <div className="flex h-full flex-col">
@@ -112,11 +130,11 @@ export function Sidebar({
         </ul>
         <div className="mt-3 flex items-center gap-2.5 rounded-xl bg-accent/40 px-3 py-2.5">
           <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-aurora text-xs font-semibold text-background">
-            {company.initials}
+            {initials}
           </span>
           <div className="min-w-0">
-            <p className="truncate text-xs font-medium">{company.founder}</p>
-            <p className="truncate text-[11px] text-muted-foreground">{company.plan} plan</p>
+            <p className="truncate text-xs font-medium">{profileName}</p>
+            <p className="truncate text-[11px] text-muted-foreground">{profileRole}</p>
           </div>
         </div>
       </div>

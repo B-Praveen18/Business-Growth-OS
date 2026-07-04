@@ -7,7 +7,9 @@ import {
   MiniProgress,
   StatusPill,
 } from "@/components/app/primitives";
-import { competitors } from "@/lib/mock-data";
+import { useState, useEffect } from "react";
+import { getCompetitors } from "@/lib/competitors-api";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -26,6 +28,25 @@ export const Route = createFileRoute("/_app/competitors")({
 const momentumIcon = { up: TrendingUp, down: TrendingDown, flat: Minus };
 
 function Competitors() {
+  const [competitors, setCompetitors] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await getCompetitors();
+        const mapped = (data.competitors || []).map((c: any) => ({
+          ...c,
+          strength: c.strengths ? c.strengths[0] : c.strength || "N/A",
+          weakness: c.weaknesses ? c.weaknesses[0] : c.weakness || "N/A",
+        }));
+        setCompetitors(mapped);
+      } catch (err: any) {
+        toast.error(err.message || "Failed to load competitors");
+      }
+    }
+    load();
+  }, []);
+
   return (
     <div className="space-y-8">
       <PageHeader

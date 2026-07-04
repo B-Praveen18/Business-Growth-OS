@@ -9,15 +9,17 @@ import {
   StatusPill,
 } from "@/components/app/primitives";
 import { GrowthLineChart, FunnelBarChart } from "@/components/app/charts";
-import { scores, growthData, funnelData } from "@/lib/mock-data";
+import { useEffect, useState } from "react";
+import { getMetrics } from "@/lib/metrics-api";
 import { Button } from "@/components/ui/button";
 import { Download, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/health")({
   component: HealthDashboard,
 });
 
-const dimensions = [
+const computeDimensions = (scores: any) => [
   { label: "Growth", value: scores.growth, change: 6, note: "Strong upward momentum in acquisition." },
   { label: "Revenue Opportunity", value: scores.revenueOpportunity, change: 3, note: "Significant untapped expansion revenue." },
   { label: "Lead Quality", value: scores.lead, change: -2, note: "Pipeline quality slightly softened." },
@@ -27,13 +29,92 @@ const dimensions = [
 ];
 
 function HealthDashboard() {
+  const [metrics, setMetrics] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const res = await getMetrics();
+        setMetrics(res.metrics || []);
+      } catch (err) {
+        toast.error("Failed to load health data");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  const exportData = () => {
+    if (!metrics || metrics.length === 0) {
+      toast.error("No metrics data to export.");
+      return;
+    }
+    const headers = ["Metric Name", "Value", "Created At"];
+    const rows = metrics.map((m: any) => [
+      `"${m.name.replace(/"/g, '""')}"`,
+      m.value,
+      m.createdAt || ""
+    ]);
+    const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "health_metrics.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("CSV export downloaded successfully!");
+  };
+
+  const getVal = (name: string, fallback: number) => {
+    const m = metrics.find((x: any) => x.name === name);
+    return m ? Number(m.value) : fallback;
+  };
+  
+  const scores = {
+    health: getVal('health', 87),
+    growth: getVal('growth', 74),
+    revenueOpportunity: getVal('revenueOpportunity', 92),
+    lead: getVal('lead', 68),
+    customerHealth: getVal('customerHealth', 81),
+    marketReadiness: getVal('marketReadiness', 79),
+  };
+  
+  const dimensions = computeDimensions(scores);
+
+  const growthData = metrics.find(m => m.name === 'growthData')?.history || [
+    { month: "Jan", users: 1820, leads: 640 },
+    { month: "Feb", users: 2010, leads: 720 },
+    { month: "Mar", users: 2240, leads: 810 },
+    { month: "Apr", users: 2490, leads: 905 },
+    { month: "May", users: 2760, leads: 1010 },
+    { month: "Jun", users: 2980, leads: 1120 },
+    { month: "Jul", users: 3130, leads: 1240 },
+    { month: "Aug", users: 3284, leads: 1360 },
+  ];
+
+  const funnelData = metrics.find(m => m.name === 'funnelData')?.history || [
+    { stage: "Visitors", value: 100 },
+    { stage: "Signups", value: 62 },
+    { stage: "Activated", value: 41 },
+    { stage: "Paying", value: 24 },
+    { stage: "Expansion", value: 11 },
+  ];
+
+  if (isLoading) {
+    return <div className="p-8 text-center text-muted-foreground">Loading health metrics...</div>;
+  }
+
   return (
     <div className="space-y-8">
       <PageHeader
         title="Business Health"
         description="A continuous, multi-dimensional read on how your company is really doing."
         actions={
-          <Button variant="outline">
+          <Button variant="outline" onClick={exportData}>
             <Download className="h-4 w-4" /> Export
           </Button>
         }

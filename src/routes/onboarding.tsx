@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { getCurrentUser, updateUser } from "@/lib/auth";
 import {
   Sparkles,
   Building2,
@@ -44,6 +45,8 @@ const integrations = ["Stripe", "HubSpot", "QuickBooks", "Google Analytics", "Sa
 function Onboarding() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
+  const [companyName, setCompanyName] = useState("");
+  const [website, setWebsite] = useState("");
   const [stage, setStage] = useState("Series A");
   const [industry, setIndustry] = useState("SaaS");
   const [picked, setPicked] = useState<string[]>(["Grow revenue"]);
@@ -52,9 +55,23 @@ function Onboarding() {
   const toggle = (list: string[], set: (v: string[]) => void, v: string) =>
     set(list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
 
-  const next = () => {
-    if (step < steps.length - 1) setStep((s) => s + 1);
-    else {
+  const next = async () => {
+    if (step < steps.length - 1) {
+      setStep((s) => s + 1);
+    } else {
+      const user = getCurrentUser();
+      if (user) {
+        try {
+          await updateUser({
+            ...user,
+            company: companyName || user.company,
+            industry,
+            businessDescription: `Stage: ${stage}. Goals: ${picked.join(", ")}. Integrations: ${connected.join(", ")}. Website: ${website}`,
+          });
+        } catch {
+          // non-blocking — proceed to dashboard even if update fails
+        }
+      }
       toast.success("Your workspace is ready");
       navigate({ to: "/dashboard" });
     }
@@ -121,11 +138,11 @@ function Onboarding() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="cname">Company name</Label>
-                    <Input id="cname" defaultValue="Northwind Labs" />
+                    <Input id="cname" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Northwind Labs" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="url">Website</Label>
-                    <Input id="url" defaultValue="northwind.com" />
+                    <Input id="url" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="northwind.com" />
                   </div>
                   <div className="space-y-2">
                     <Label>Company stage</Label>

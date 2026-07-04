@@ -9,6 +9,8 @@ import {
   StatusPill,
 } from "@/components/app/primitives";
 import { agents } from "@/lib/mock-data";
+import { useEffect } from "react";
+import { getChatHistory, sendChatMessage } from "@/lib/chat-api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -26,22 +28,44 @@ const iconMap: Record<string, typeof Crown> = {
   operations: Settings2,
 };
 
-const transcript = [
-  { agent: "ceo", text: "Team, our focus this quarter is expansion revenue over new logos. Where do we have the most leverage?" },
-  { agent: "sales", text: "34 existing accounts are nearing seat limits with strong usage signals. Prioritizing them could add +$88k ARR." },
-  { agent: "finance", text: "A usage-based expansion tier models to +$61k MRR with minimal margin impact. Runway stays healthy at 22 months." },
-  { agent: "marketing", text: "I'd shift 18% of paid budget to referral — it's 2.4x more CAC-efficient. That funds expansion enablement." },
-  { agent: "operations", text: "Caveat: onboarding stage 3 has a manual handoff adding 3.2 days. Automating it protects activation as we scale." },
-  { agent: "ceo", text: "Consensus: launch the expansion tier, target the 34 accounts, reallocate spend, and fix onboarding. I'll ratify this in the roadmap." },
-];
+// transcript removed
 
 function Boardroom() {
   const [input, setInput] = useState("");
+  const [messages, setMessages] = useState<any[]>([]);
 
-  const send = () => {
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await getChatHistory();
+        if (data.session && data.session.messages) {
+          setMessages(data.session.messages);
+        }
+      } catch (err: any) {
+        toast.error(err.message || "Failed to load chat history");
+      }
+    }
+    load();
+  }, []);
+
+  const send = async () => {
     if (!input.trim()) return;
-    toast.info("Connect an AI provider to run a live boardroom session.");
+    const currentInput = input;
     setInput("");
+    
+    // Add optimistic user message
+    setMessages(prev => [...prev, { agent: "user", text: currentInput }]);
+    
+    try {
+      const res = await sendChatMessage(currentInput);
+      if (res.session && res.session.messages) {
+        setMessages(res.session.messages);
+      } else if (res.message) {
+        setMessages(prev => [...prev, res.message]);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send message");
+    }
   };
 
   return (
@@ -94,8 +118,8 @@ function Boardroom() {
           <GlassCard className="flex h-full flex-col">
             <SectionHeading title="Session transcript" description="Q3 Strategic Priorities" />
             <div className="flex-1 space-y-4">
-              {transcript.map((m, i) => {
-                const agent = agents.find((a) => a.id === m.agent)!;
+              {messages.map((m, i) => {
+                const agent = agents.find((a) => a.id === m.agent) || { name: m.agent === 'user' ? 'You' : 'Agent', accent: 'currentColor' };
                 const Icon = iconMap[m.agent] ?? Sparkles;
                 return (
                   <div key={i}>
@@ -109,7 +133,7 @@ function Boardroom() {
                       <div className="min-w-0 flex-1">
                         <p className="text-xs font-medium text-muted-foreground">{agent.name}</p>
                         <div className="mt-1 rounded-2xl rounded-tl-sm bg-accent/40 px-4 py-2.5 text-sm leading-relaxed">
-                          {m.text}
+                          {m.text || m.content}
                         </div>
                       </div>
                     </div>

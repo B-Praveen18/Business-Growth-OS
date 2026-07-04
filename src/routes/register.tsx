@@ -25,9 +25,22 @@ function RegisterPage() {
     const company = (form.get("company") ?? "").toString().trim();
     const email = (form.get("email") ?? "").toString().trim();
     const password = (form.get("password") ?? "").toString();
+    const industry = (form.get("industry") ?? "").toString().trim();
+    const monthlyRevenue = (form.get("monthlyRevenue") ?? "").toString().trim();
+    const businessDescription = (form.get("businessDescription") ?? "").toString().trim();
+    const role = (form.get("role") ?? "Owner").toString().trim() || "Owner";
 
     try {
-      await registerUser({ name, company, email, password });
+      await registerUser({
+        name,
+        company,
+        role,
+        email,
+        password,
+        industry,
+        monthlyRevenue,
+        businessDescription,
+      });
       toast.success("Account created — welcome to BusinessOS");
       navigate({ to: "/dashboard" });
     } catch (error) {
@@ -64,6 +77,29 @@ function RegisterPage() {
             <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input id="company" name="company" placeholder="Northwind Labs" required className="pl-9" />
           </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="industry">Business industry</Label>
+          <div className="relative">
+            <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input id="industry" name="industry" placeholder="Bakery" required className="pl-9" />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="monthlyRevenue">Monthly revenue</Label>
+          <div className="relative">
+            <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input id="monthlyRevenue" name="monthlyRevenue" placeholder="$32,000" required className="pl-9" />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="businessDescription">Business overview</Label>
+          <textarea
+            id="businessDescription"
+            name="businessDescription"
+            placeholder="We bake artisan bread and supply local cafes."
+            className="min-h-[120px] w-full rounded-xl border border-border bg-background px-3 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
+          />
         </div>
         <div className="space-y-2">
           <Label htmlFor="email">Work email</Label>

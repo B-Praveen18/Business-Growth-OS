@@ -11,16 +11,13 @@ import {
   StatusPill,
 } from "@/components/app/primitives";
 import { RevenueAreaChart, ChannelDonut } from "@/components/app/charts";
-import {
-  scores,
-  kpis,
-  revenueTrend,
-  channelData,
-  agents,
-  activity,
-  decisions,
-} from "@/lib/mock-data";
+import { agents } from "@/lib/mock-data";
 import { getCurrentUser, User } from "@/lib/auth";
+import { getMetrics } from "@/lib/metrics-api";
+import { getActivity } from "@/lib/activity-api";
+import { getDecisions } from "@/lib/decisions-api";
+import { getRisks } from "@/lib/risks-api";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -43,7 +40,26 @@ export const Route = createFileRoute("/_app/dashboard")({
 
 const kpiIcons = [DollarSign, Users2, Repeat, Target, Flame, ActivityIcon];
 
-const scoreCards = [
+function getGreeting() {
+  const hr = new Date().getHours();
+  if (hr < 12) return "Good morning";
+  if (hr < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+function formatTime(isoString: string): string {
+  const diff = Date.now() - new Date(isoString).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return days === 1 ? "Yesterday" : `${days}d ago`;
+  return new Date(isoString).toLocaleDateString();
+}
+
+const computeScoreCards = (scores: any) => [
   { label: "Growth Score", value: scores.growth, hint: "Momentum across channels" },
   { label: "Revenue Opportunity", value: scores.revenueOpportunity, hint: "Untapped expansion" },
   { label: "Lead Score", value: scores.lead, hint: "Pipeline quality" },
@@ -53,15 +69,94 @@ const scoreCards = [
 
 function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
+  const [metrics, setMetrics] = useState<any[]>([]);
+  const [activity, setActivity] = useState<any[]>([]);
+  const [decisions, setDecisions] = useState<any[]>([]);
+  const [risks, setRisks] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setUser(getCurrentUser());
+    
+    async function loadData() {
+      try {
+        const [metricsRes, activityRes, decisionsRes, risksRes] = await Promise.all([
+          getMetrics(),
+          getActivity(),
+          getDecisions(),
+          getRisks(),
+        ]);
+        setMetrics(metricsRes.metrics || []);
+        setActivity(activityRes.activity || []);
+        setDecisions(decisionsRes.decisions || []);
+        setRisks(risksRes.risks || []);
+      } catch (err) {
+        toast.error("Failed to load dashboard data");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
   }, []);
+
+  const businessType = user?.industry?.toLowerCase() ?? "";
+  const isBakery = /bakery|cafe|coffee|food/.test(businessType);
+
+  const getVal = (name: string, fallback: number) => {
+    const m = metrics.find((x: any) => x.name === name);
+    return m ? Number(m.value) : fallback;
+  };
+  
+  const scores = {
+    health: getVal('health', 87),
+    growth: getVal('growth', 74),
+    revenueOpportunity: getVal('revenueOpportunity', 92),
+    lead: getVal('lead', 68),
+    customerHealth: getVal('customerHealth', 81),
+    marketReadiness: getVal('marketReadiness', 79),
+  };
+  
+  const scoreCards = computeScoreCards(scores);
+
+  const kpis = [
+    { label: "Monthly Recurring Revenue", value: `₹${getVal('mrr', 482900).toLocaleString()}`, delta: "+12.4%", trend: "up" as const },
+    { label: "Active Customers", value: getVal('customers', 3284).toLocaleString(), delta: "+4.1%", trend: "up" as const },
+    { label: "Net Revenue Retention", value: `${getVal('nrr', 118)}%`, delta: "+2.3%", trend: "up" as const },
+    { label: "Customer Acquisition Cost", value: `₹${getVal('cac', 212)}`, delta: "-8.7%", trend: "up" as const },
+    { label: "Burn Multiple", value: `${getVal('burnMultiple', 1.2)}x`, delta: "-0.3x", trend: "up" as const },
+    { label: "Churn Rate", value: `${getVal('churnRate', 1.9)}%`, delta: "+0.4%", trend: "down" as const },
+  ];
+
+  const activeRisks = risks.filter(r => r.status !== 'mitigated');
+  const highAlertsCount = activeRisks.filter(r => r.severity === 'high' || r.severity === 'critical').length;
+  const mediumAlertsCount = activeRisks.filter(r => r.severity === 'medium').length;
+
+  const revenueTrend = metrics.find(m => m.name === 'revenueTrend')?.history || [
+    { month: "Jan", revenue: 312, forecast: 300, target: 320 },
+    { month: "Feb", revenue: 328, forecast: 325, target: 340 },
+    { month: "Mar", revenue: 355, forecast: 350, target: 360 },
+    { month: "Apr", revenue: 372, forecast: 378, target: 385 },
+    { month: "May", revenue: 401, forecast: 405, target: 410 },
+    { month: "Jun", revenue: 428, forecast: 430, target: 440 },
+    { month: "Jul", revenue: 451, forecast: 458, target: 465 },
+    { month: "Aug", revenue: 483, forecast: 486, target: 495 },
+  ];
+
+  const channelData = metrics.find(m => m.name === 'channelData')?.history || [
+    { name: "Organic", value: 38, color: "var(--chart-1)" },
+    { name: "Paid", value: 26, color: "var(--chart-2)" },
+    { name: "Referral", value: 21, color: "var(--chart-3)" },
+    { name: "Outbound", value: 15, color: "var(--chart-4)" },
+  ];
+  
+  if (isLoading) {
+    return <div className="p-8 text-center text-muted-foreground">Loading dashboard...</div>;
+  }
 
   return (
     <div className="space-y-8">
       <PageHeader
-        title={user ? `Good morning, ${user.name}` : "Good morning"}
+        title={user ? `${getGreeting()}, ${user.name}` : getGreeting()}
         description={
           user
             ? `Here's how ${user.company} is performing today. Your AI board is standing by.`
@@ -131,8 +226,10 @@ function Dashboard() {
                 <ShieldAlert className="h-4 w-4" /> Risk Alerts
               </div>
               <div>
-                <span className="text-3xl font-semibold tracking-tight">3</span>
-                <p className="mt-1 text-xs text-muted-foreground">1 high · 2 medium</p>
+                <span className="text-3xl font-semibold tracking-tight">{activeRisks.length}</span>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {highAlertsCount} high · {mediumAlertsCount} medium
+                </p>
               </div>
               <Link to="/risk" className="text-xs font-medium text-primary hover:underline">
                 Review risks →
@@ -142,8 +239,42 @@ function Dashboard() {
         </FadeIn>
       </div>
 
-      {/* KPIs */}
+      {/* Industry-aware operations */}
       <FadeIn delay={0.1}>
+        <SectionHeading
+          title={isBakery ? "Bakery operations" : "Business operations"}
+          description={
+            isBakery
+              ? "Fresh inventory, prep efficiency, and customer demand for your bakery."
+              : "Top operational signals matched to your industry."
+          }
+        />
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard
+            label={isBakery ? "Daily loaves" : "Monthly orders"}
+            value={isBakery ? "312" : "1.4k"}
+            icon={isBakery ? Flame : Repeat}
+          />
+          <StatCard
+            label={isBakery ? "Fresh batches" : "Customer growth"}
+            value={isBakery ? "24" : "18%"}
+            icon={isBakery ? Sparkles : Users2}
+          />
+          <StatCard
+            label={isBakery ? "Ingredient waste" : "Customer retention"}
+            value={isBakery ? "4%" : "83%"}
+            icon={isBakery ? DollarSign : Target}
+          />
+          <StatCard
+            label={isBakery ? "Peak service" : "Revenue per user"}
+            value={isBakery ? "9:00 AM" : "₹7.8k"}
+            icon={isBakery ? ActivityIcon : Flame}
+          />
+        </div>
+      </FadeIn>
+
+      {/* KPIs */}
+      <FadeIn delay={0.12}>
         <SectionHeading title="Business KPIs" description="Live metrics across the company" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           {kpis.map((k, i) => (
@@ -158,7 +289,7 @@ function Dashboard() {
           <GlassCard>
             <SectionHeading
               title="Revenue Trends"
-              description="Actual vs AI forecast · in $K"
+              description={isBakery ? "Daily sales, prep capacity and freshness curve." : "Actual vs AI forecast · in ₹K"}
               action={<StatusPill label="On track" tone="success" />}
             />
             <RevenueAreaChart data={revenueTrend} />
@@ -237,26 +368,29 @@ function Dashboard() {
             <SectionHeading title="Activity Timeline" description="What your AI team did recently" />
             <ol className="relative space-y-5 pl-6">
               <span className="absolute left-[7px] top-1 h-[calc(100%-1rem)] w-px bg-border" />
-              {activity.slice(0, 6).map((a) => (
-                <li key={a.id} className="relative">
-                  <span
-                    className={cn(
-                      "absolute -left-6 top-1 grid h-3.5 w-3.5 place-items-center rounded-full ring-4 ring-background",
-                      a.type === "decision" && "bg-primary",
-                      a.type === "insight" && "bg-info",
-                      a.type === "alert" && "bg-warning",
-                      a.type === "report" && "bg-success",
-                    )}
-                  />
-                  <div className="flex items-baseline justify-between gap-3">
-                    <p className="text-sm">
-                      <span className="font-medium">{a.actor}</span>{" "}
-                      <span className="text-muted-foreground">{a.action}</span>
-                    </p>
-                    <span className="shrink-0 text-xs text-muted-foreground">{a.time}</span>
-                  </div>
-                </li>
-              ))}
+              {activity.slice(0, 6).map((a) => {
+                const mappedType = a.type || a.module;
+                return (
+                  <li key={a._id || a.id} className="relative">
+                    <span
+                      className={cn(
+                        "absolute -left-6 top-1 grid h-3.5 w-3.5 place-items-center rounded-full ring-4 ring-background",
+                        mappedType === "decision" && "bg-primary",
+                        mappedType === "insight" && "bg-info",
+                        mappedType === "alert" && "bg-warning",
+                        mappedType === "report" && "bg-success",
+                      )}
+                    />
+                    <div className="flex items-baseline justify-between gap-3">
+                      <p className="text-sm">
+                        <span className="font-medium">{a.userId || a.actor}</span>{" "}
+                        <span className="text-muted-foreground">{a.action}</span>
+                      </p>
+                      <span className="shrink-0 text-xs text-muted-foreground">{a.createdAt ? formatTime(a.createdAt) : a.time}</span>
+                    </div>
+                  </li>
+                );
+              })}
             </ol>
           </GlassCard>
         </FadeIn>
@@ -267,7 +401,7 @@ function Dashboard() {
               <SectionHeading title="Recent Decisions" />
               <ul className="space-y-3">
                 {decisions.map((d) => (
-                  <li key={d.id} className="flex items-start gap-3">
+                  <li key={d._id || d.id} className="flex items-start gap-3">
                     <CheckCircle2
                       className={cn(
                         "mt-0.5 h-4 w-4 shrink-0",
@@ -277,7 +411,7 @@ function Dashboard() {
                     <div className="min-w-0">
                       <p className="text-sm font-medium leading-snug">{d.title}</p>
                       <p className="text-xs text-muted-foreground">
-                        {d.outcome} · {d.agents.join(", ")} · {d.date}
+                        {d.outcome} · {(d.agents || []).join(", ")} · {d.createdAt ? new Date(d.createdAt).toLocaleDateString() : d.date}
                       </p>
                     </div>
                   </li>
@@ -290,7 +424,7 @@ function Dashboard() {
               </div>
               <p className="mt-2 text-sm text-muted-foreground">
                 Launch a usage-based expansion tier — modeled to add{" "}
-                <span className="font-medium text-foreground">+$61k MRR</span>.
+                <span className="font-medium text-foreground">+₹61k MRR</span>.
               </p>
               <Button variant="outline" size="sm" className="mt-3" asChild>
                 <Link to="/recommendations">See all recommendations</Link>

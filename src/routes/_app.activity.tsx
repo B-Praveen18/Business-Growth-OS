@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { GlassCard, FadeIn, PageHeader, SectionHeading } from "@/components/app/primitives";
-import { activity } from "@/lib/mock-data";
+import { useState, useEffect } from "react";
+import { getActivity } from "@/lib/activity-api";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Sparkles, ShieldAlert, FileText, CheckCircle2 } from "lucide-react";
 
@@ -15,7 +17,39 @@ const typeMeta: Record<string, { Icon: typeof Sparkles; color: string }> = {
   report: { Icon: FileText, color: "text-success bg-success/15" },
 };
 
+function formatTime(isoString: string): string {
+  const diff = Date.now() - new Date(isoString).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return days === 1 ? "Yesterday" : `${days}d ago`;
+  return new Date(isoString).toLocaleDateString();
+}
+
 function ActivityHistory() {
+  const [activity, setActivity] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await getActivity();
+        const mapped = (data.activity || []).map((a: any) => ({
+          id: a._id,
+          actor: a.userId?.name || "User",
+          action: a.action,
+          time: formatTime(a.createdAt),
+          type: "insight" // default or map from module
+        }));
+        setActivity(mapped);
+      } catch (err: any) {
+        toast.error(err.message || "Failed to load activity");
+      }
+    }
+    load();
+  }, []);
   return (
     <div className="space-y-6">
       <PageHeader

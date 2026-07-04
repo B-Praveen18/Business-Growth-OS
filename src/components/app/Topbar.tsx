@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   DropdownMenu,
@@ -8,7 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { findNav } from "@/lib/nav";
-import { company, notifications } from "@/lib/mock-data";
+import { getNotifications } from "@/lib/notifications-api";
+import { getCurrentUser, User } from "@/lib/auth";
 import {
   Menu,
   Search,
@@ -30,7 +32,24 @@ export function Topbar({
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const current = findNav(pathname);
-  const unread = notifications.filter((n) => n.unread).length;
+  const [user, setUser] = useState<User | null>(null);
+  const [notifications, setNotifications] = useState<any[]>([]);
+
+  useEffect(() => {
+    setUser(getCurrentUser());
+    getNotifications().then(res => setNotifications(res.notifications || [])).catch(() => {});
+  }, []);
+
+  const unread = notifications.filter((n) => !n.read).length;
+
+  const initials = user?.name
+    ? user.name
+        .split(" ")
+        .map((word) => word[0] ?? "")
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "NW";
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border/60 bg-background/70 px-4 backdrop-blur-xl md:px-6">
@@ -92,13 +111,13 @@ export function Topbar({
                 onClick={() => navigate({ to: "/notifications" })}
               >
                 <div className="flex w-full items-center gap-2">
-                  {n.unread && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />}
+                  {!n.read && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />}
                   <span className="truncate text-sm font-medium">{n.title}</span>
                   <span className="ml-auto shrink-0 text-[11px] text-muted-foreground">
-                    {n.time}
+                    {n.createdAt ? new Date(n.createdAt).toLocaleDateString() : n.time}
                   </span>
                 </div>
-                <span className="line-clamp-2 pl-3.5 text-xs text-muted-foreground">{n.body}</span>
+                <span className="line-clamp-2 pl-3.5 text-xs text-muted-foreground">{n.message || n.body}</span>
               </DropdownMenuItem>
             ))}
           </div>
@@ -114,15 +133,15 @@ export function Topbar({
         <DropdownMenuTrigger asChild>
           <button className="flex items-center gap-2 rounded-xl border border-border/60 bg-secondary/40 py-1 pl-1 pr-2 transition-colors hover:bg-secondary/70">
             <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-gradient-aurora text-xs font-semibold text-background">
-              {company.initials}
+              {initials}
             </span>
-            <span className="hidden text-sm font-medium sm:inline">{company.founder}</span>
+            <span className="hidden text-sm font-medium sm:inline">{user?.name ?? "Guest"}</span>
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
           <div className="px-2 py-1.5">
-            <p className="text-sm font-medium">{company.founder}</p>
-            <p className="text-xs text-muted-foreground">{company.role}</p>
+            <p className="text-sm font-medium">{user?.name ?? "Guest"}</p>
+            <p className="text-xs text-muted-foreground">{user?.role ?? "User"}</p>
           </div>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => navigate({ to: "/profile" })}>

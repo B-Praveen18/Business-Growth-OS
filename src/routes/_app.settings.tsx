@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { GlassCard, FadeIn, PageHeader, SectionHeading } from "@/components/app/primitives";
-import { company } from "@/lib/mock-data";
+import { getCurrentUser, updateUser, type User } from "@/lib/auth";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +21,45 @@ const prefs = [
 ];
 
 function Settings() {
+  const [user, setUser] = useState<User | null>(null);
+  const [form, setForm] = useState({
+    company: "",
+    website: "",
+    timezone: "",
+  });
+
+  useEffect(() => {
+    const stored = getCurrentUser();
+    if (stored) {
+      setUser(stored);
+      setForm({
+        company: stored.company || "",
+        website: stored.website || "northwind.com",
+        timezone: stored.timezone || "America/New_York",
+      });
+    }
+  }, []);
+
+  const saveSettings = async () => {
+    if (!user) {
+      toast.error("Sign in first to save settings.");
+      return;
+    }
+    try {
+      const updated: User = {
+        ...user,
+        company: form.company,
+        website: form.website,
+        timezone: form.timezone,
+      };
+      await updateUser(updated);
+      setUser(updated);
+      toast.success("Settings saved successfully!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update settings");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader title="Settings" description="Manage your workspace, preferences and integrations." />
@@ -37,23 +77,35 @@ function Settings() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="cn">Company name</Label>
-                  <Input id="cn" defaultValue={company.name} />
+                  <Input
+                    id="cn"
+                    value={form.company}
+                    onChange={(e) => setForm((prev) => ({ ...prev, company: e.target.value }))}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pl">Plan</Label>
-                  <Input id="pl" defaultValue={company.plan} disabled />
+                  <Input id="pl" defaultValue="Enterprise" disabled />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="url">Website</Label>
-                  <Input id="url" defaultValue="northwind.com" />
+                  <Input
+                    id="url"
+                    value={form.website}
+                    onChange={(e) => setForm((prev) => ({ ...prev, website: e.target.value }))}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="tz">Timezone</Label>
-                  <Input id="tz" defaultValue="America/New_York" />
+                  <Input
+                    id="tz"
+                    value={form.timezone}
+                    onChange={(e) => setForm((prev) => ({ ...prev, timezone: e.target.value }))}
+                  />
                 </div>
               </div>
               <div className="mt-5 flex justify-end">
-                <Button onClick={() => toast.success("Settings saved")}>Save changes</Button>
+                <Button onClick={saveSettings}>Save changes</Button>
               </div>
             </GlassCard>
           </TabsContent>

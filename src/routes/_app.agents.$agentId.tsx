@@ -11,7 +11,9 @@ import {
   EmptyState,
 } from "@/components/app/primitives";
 import { MiniAreaChart } from "@/components/app/charts";
-import { agents, revenueTrend } from "@/lib/mock-data";
+import { agents } from "@/lib/mock-data";
+import { useEffect } from "react";
+import { getMetrics } from "@/lib/metrics-api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -40,15 +42,15 @@ const focusMap: Record<string, { metrics: { label: string; value: string }[]; ta
   },
   marketing: {
     metrics: [
-      { label: "Blended CAC", value: "$212" },
-      { label: "Pipeline generated", value: "$1.2M" },
+      { label: "Blended CAC", value: "₹212" },
+      { label: "Pipeline generated", value: "₹1.2M" },
       { label: "Best channel", value: "Referral" },
     ],
     tasks: ["Reallocate paid spend", "Relaunch referral program", "Refresh positioning", "A/B test onboarding emails"],
   },
   sales: {
     metrics: [
-      { label: "Pipeline value", value: "$2.4M" },
+      { label: "Pipeline value", value: "₹2.4M" },
       { label: "Win rate", value: "28%" },
       { label: "Expansion accounts", value: "34" },
     ],
@@ -76,6 +78,22 @@ function AgentDetail() {
   const { agentId } = Route.useParams();
   const agent = agents.find((a) => a.id === agentId);
   const [input, setInput] = useState("");
+  const [metrics, setMetrics] = useState<any[]>([]);
+
+  useEffect(() => {
+    getMetrics().then(res => setMetrics(res.metrics || [])).catch(() => {});
+  }, []);
+
+  const revenueTrend = metrics.find(m => m.name === 'revenueTrend')?.history || [
+    { month: "Jan", revenue: 312, forecast: 300, target: 320 },
+    { month: "Feb", revenue: 328, forecast: 325, target: 340 },
+    { month: "Mar", revenue: 355, forecast: 350, target: 360 },
+    { month: "Apr", revenue: 372, forecast: 378, target: 385 },
+    { month: "May", revenue: 401, forecast: 405, target: 410 },
+    { month: "Jun", revenue: 428, forecast: 430, target: 440 },
+    { month: "Jul", revenue: 451, forecast: 458, target: 465 },
+    { month: "Aug", revenue: 483, forecast: 486, target: 495 },
+  ];
 
   if (!agent) {
     return (

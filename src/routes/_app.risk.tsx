@@ -7,7 +7,9 @@ import {
   MiniProgress,
   StatCard,
 } from "@/components/app/primitives";
-import { risks } from "@/lib/mock-data";
+import { useState, useEffect } from "react";
+import { getRisks } from "@/lib/risks-api";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ShieldAlert, ShieldCheck, AlertTriangle, Activity, Download } from "lucide-react";
@@ -24,13 +26,57 @@ const severityTone: Record<string, string> = {
 };
 
 function RiskAnalysis() {
+  const [risks, setRisks] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await getRisks();
+        setRisks(data.risks || []);
+      } catch (err: any) {
+        toast.error(err.message || "Failed to load risks");
+      }
+    }
+    load();
+  }, []);
+
+  const exportRisks = () => {
+    if (!risks || risks.length === 0) {
+      toast.error("No risks data to export.");
+      return;
+    }
+    const headers = ["Title", "Severity", "Probability", "Category", "Owner", "Mitigation", "Status"];
+    const rows = risks.map((r: any) => [
+      `"${r.title.replace(/"/g, '""')}"`,
+      r.severity,
+      `${r.probability}%`,
+      r.category || "",
+      r.owner || "",
+      `"${(r.mitigation || "").replace(/"/g, '""')}"`,
+      r.status
+    ]);
+    const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "risk_register.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("CSV export downloaded successfully!");
+  };
+
+  const activeRisks = risks.length;
+  const highSeverity = risks.filter(r => r.severity === 'high' || r.severity === 'critical').length;
+
   return (
     <div className="space-y-8">
       <PageHeader
         title="Risk Analysis"
         description="Surface threats before they become problems — ranked by probability and impact."
         actions={
-          <Button variant="outline">
+          <Button variant="outline" onClick={exportRisks}>
             <Download className="h-4 w-4" /> Export
           </Button>
         }
@@ -39,8 +85,8 @@ function RiskAnalysis() {
       <FadeIn>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard label="Overall risk level" value="Moderate" icon={ShieldAlert} />
-          <StatCard label="Active risks" value="4" icon={AlertTriangle} />
-          <StatCard label="High severity" value="1" icon={ShieldAlert} />
+          <StatCard label="Active risks" value={activeRisks.toString()} icon={AlertTriangle} />
+          <StatCard label="High severity" value={highSeverity.toString()} icon={ShieldAlert} />
           <StatCard label="Mitigated (30d)" value="6" delta="+2" trend="up" icon={ShieldCheck} />
         </div>
       </FadeIn>

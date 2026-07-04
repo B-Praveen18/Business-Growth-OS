@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { GlassCard, FadeIn, PageHeader, EmptyState } from "@/components/app/primitives";
-import { notifications as seed } from "@/lib/mock-data";
+import { getNotifications, markAllNotificationsRead } from "@/lib/notifications-api";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Sparkles, ShieldAlert, FileText, Settings2, BellOff, CheckCheck } from "lucide-react";
@@ -18,9 +19,41 @@ const typeMeta: Record<string, { Icon: typeof Sparkles; tone: string }> = {
   system: { Icon: Settings2, tone: "text-muted-foreground bg-accent/60" },
 };
 
+function formatTime(isoString: string): string {
+  const diff = Date.now() - new Date(isoString).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return days === 1 ? "Yesterday" : `${days}d ago`;
+  return new Date(isoString).toLocaleDateString();
+}
+
 function Notifications() {
-  const [items, setItems] = useState(seed);
+  const [items, setItems] = useState<any[]>([]);
   const unread = items.filter((n) => n.unread).length;
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await getNotifications();
+        const mapped = (data.notifications || []).map((n: any) => ({
+          id: n._id,
+          title: n.title || "Notification",
+          body: n.message,
+          time: formatTime(n.createdAt),
+          unread: !n.read,
+          type: n.type || "system"
+        }));
+        setItems(mapped);
+      } catch (err: any) {
+        toast.error(err.message || "Failed to load notifications");
+      }
+    }
+    load();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -30,9 +63,14 @@ function Notifications() {
         actions={
           <Button
             variant="outline"
-            onClick={() => {
-              setItems((xs) => xs.map((n) => ({ ...n, unread: false })));
-              toast.success("All notifications marked as read");
+            onClick={async () => {
+              try {
+                await markAllNotificationsRead();
+                setItems((xs) => xs.map((n) => ({ ...n, unread: false })));
+                toast.success("All notifications marked as read");
+              } catch (e: any) {
+                toast.error(e.message || "Failed to mark as read");
+              }
             }}
           >
             <CheckCheck className="h-4 w-4" /> Mark all read
