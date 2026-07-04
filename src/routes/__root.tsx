@@ -74,14 +74,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Aurelia — AI Business Growth Operating System" },
+      { title: "BusinessOS — AI Business Growth Operating System" },
       {
         name: "description",
         content:
-          "Aurelia is the AI Business Growth OS that helps CEOs understand, decide, and grow — with a boardroom of AI agents, live health scores, and executive insights.",
+          "BusinessOS is the AI Business Growth OS that helps CEOs understand, decide, and grow — with a boardroom of AI agents, live health scores, and executive insights.",
       },
-      { name: "author", content: "Aurelia" },
-      { property: "og:title", content: "Aurelia — AI Business Growth Operating System" },
+      { name: "author", content: "BusinessOS" },
+      { property: "og:title", content: "BusinessOS — AI Business Growth Operating System" },
       {
         property: "og:description",
         content:
@@ -89,11 +89,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Aurelia" },
-      { name: "twitter:title", content: "Aurelia — AI Business Growth Operating System" },
-      { name: "description", content: "Aurelia is the AI Business Growth OS that helps CEOs understand, decide, and grow — with a boardroom of AI agents, live health scores, and executive insights." },
-      { property: "og:description", content: "Aurelia is the AI Business Growth OS that helps CEOs understand, decide, and grow — with a boardroom of AI agents, live health scores, and executive insights." },
-      { name: "twitter:description", content: "Aurelia is the AI Business Growth OS that helps CEOs understand, decide, and grow — with a boardroom of AI agents, live health scores, and executive insights." },
+      { name: "twitter:site", content: "@BusinessOS" },
+      { name: "twitter:title", content: "BusinessOS — AI Business Growth Operating System" },
+      { name: "description", content: "BusinessOS is the AI Business Growth OS that helps CEOs understand, decide, and grow — with a boardroom of AI agents, live health scores, and executive insights." },
+      { property: "og:description", content: "BusinessOS is the AI Business Growth OS that helps CEOs understand, decide, and grow — with a boardroom of AI agents, live health scores, and executive insights." },
+      { name: "twitter:description", content: "BusinessOS is the AI Business Growth OS that helps CEOs understand, decide, and grow — with a boardroom of AI agents, live health scores, and executive insights." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7b17d3c3-a21b-4ab3-85a0-2935afc70644/id-preview-865dd300--6f5561df-7fc6-4b73-b350-bae969ed9c26.lovable.app-1783154558766.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7b17d3c3-a21b-4ab3-85a0-2935afc70644/id-preview-865dd300--6f5561df-7fc6-4b73-b350-bae969ed9c26.lovable.app-1783154558766.png" },
     ],
@@ -142,3 +142,5 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+
+

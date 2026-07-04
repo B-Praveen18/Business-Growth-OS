@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   GlassCard,
   StatCard,
@@ -19,6 +20,7 @@ import {
   activity,
   decisions,
 } from "@/lib/mock-data";
+import { getCurrentUser, User } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -50,11 +52,21 @@ const scoreCards = [
 ];
 
 function Dashboard() {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    setUser(getCurrentUser());
+  }, []);
+
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Good morning, Alex"
-        description="Here's how Northwind Labs is performing today. Your AI board is standing by."
+        title={user ? `Good morning, ${user.name}` : "Good morning"}
+        description={
+          user
+            ? `Here's how ${user.company} is performing today. Your AI board is standing by.`
+            : "Here's how your business is performing today. Your AI board is standing by."
+        }
         actions={
           <>
             <Button variant="outline" asChild>
@@ -68,6 +80,23 @@ function Dashboard() {
           </>
         }
       />
+
+      {user && (
+        <FadeIn>
+          <GlassCard className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Signed in as</p>
+              <h2 className="mt-2 text-xl font-semibold tracking-tight">{user.name}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{user.company}</p>
+            </div>
+            <div className="rounded-3xl bg-secondary/50 p-4 text-sm text-muted-foreground">
+              <p className="font-medium text-foreground">BusinessOS account</p>
+              <p className="mt-2">Member since {new Date(user.createdAt).toLocaleDateString()}</p>
+            </div>
+          </GlassCard>
+        </FadeIn>
+      )}
 
       {/* Hero: health + scores */}
       <div className="grid gap-5 lg:grid-cols-[1.1fr_2fr]">

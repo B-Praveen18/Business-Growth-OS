@@ -45,7 +45,7 @@ export function Topbar({
       {/* Breadcrumbs */}
       <nav className="hidden min-w-0 items-center gap-1.5 text-sm md:flex">
         <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">
-          Aurelia
+          BusinessOS
         </Link>
         <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/50" />
         <span className="truncate font-medium">{current?.label ?? "Overview"}</span>
@@ -143,4 +143,6 @@ export function Topbar({
     </header>
   );
 }
+
+
 

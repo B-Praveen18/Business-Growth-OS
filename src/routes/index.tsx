@@ -54,7 +54,7 @@ function Landing() {
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-aurora shadow-glow">
             <Sparkles className="h-4.5 w-4.5 text-background" />
           </span>
-          <span className="text-lg font-semibold tracking-tight">Aurelia</span>
+          <span className="text-lg font-semibold tracking-tight">BusinessOS</span>
         </div>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
           <a href="#features" className="hover:text-foreground">Features</a>
@@ -83,11 +83,12 @@ function Landing() {
             The AI Business Growth Operating System
           </span>
           <h1 className="mt-6 text-4xl font-semibold tracking-tight md:text-6xl">
-            The intelligence layer <br className="hidden md:block" />
-            <span className="text-gradient">every CEO deserves.</span>
+            Don&apos;t let confusion cost your business.
+            <br className="hidden md:block" />
+            <span className="text-gradient">Better Call BusinessOS.</span>
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground md:text-lg">
-            Aurelia turns scattered business data into calm, decisive clarity. Your AI
+            BusinessOS turns scattered business data into calm, decisive clarity. Your AI
             executive team monitors health, uncovers growth, and helps you decide — every
             single morning.
           </p>
@@ -114,7 +115,7 @@ function Landing() {
         <div className="glass overflow-hidden rounded-3xl p-2 shadow-elegant">
           <img
             src={heroDashboard}
-            alt="Aurelia dashboard preview showing business health score and revenue charts"
+            alt="BusinessOS dashboard preview showing business health score and revenue charts"
             width={1600}
             height={1104}
             className="rounded-2xl"
@@ -209,7 +210,7 @@ function Landing() {
             ))}
           </div>
           <p className="text-xl font-medium leading-relaxed md:text-2xl">
-            "Aurelia replaced three dashboards and a weekly ops meeting. I open it every
+            "BusinessOS replaced three dashboards and a weekly ops meeting. I open it every
             morning and I finally feel like I'm ahead of my own company."
           </p>
           <p className="mt-6 text-sm text-muted-foreground">
@@ -250,7 +251,7 @@ function Landing() {
             <span className="grid h-7 w-7 place-items-center rounded-lg bg-gradient-aurora">
               <Sparkles className="h-3.5 w-3.5 text-background" />
             </span>
-            <span className="font-medium text-foreground">Aurelia</span>
+            <span className="font-medium text-foreground">BusinessOS</span>
             <span>© 2026</span>
           </div>
           <div className="flex gap-6">
@@ -263,3 +264,5 @@ function Landing() {
     </div>
   );
 }
+
+

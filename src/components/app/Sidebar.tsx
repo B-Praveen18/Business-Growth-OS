@@ -22,7 +22,7 @@ export function Sidebar({
           <Sparkles className="h-4.5 w-4.5 text-background" />
         </span>
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold tracking-tight">Aurelia</p>
+          <p className="truncate text-sm font-semibold tracking-tight">BusinessOS</p>
           <p className="truncate text-xs text-muted-foreground">Growth OS</p>
         </div>
         <button
@@ -151,3 +151,5 @@ export function Sidebar({
     </>
   );
 }
+
+

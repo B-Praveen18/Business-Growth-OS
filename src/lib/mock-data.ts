@@ -1,4 +1,4 @@
-// Static presentation data for the Aurelia frontend. No backend, no APIs.
+// Static presentation data for the BusinessOS frontend. No backend, no APIs.
 
 export const company = {
   name: "Northwind Labs",
@@ -386,3 +386,5 @@ export const reports: Report[] = [
   { id: "rp4", title: "Competitive Landscape", period: "Q2 2026", type: "Market", status: "ready" },
   { id: "rp5", title: "Q3 Forecast Model", period: "Q3 2026", type: "Finance", status: "generating" },
 ];
+
+

@@ -33,7 +33,7 @@ export function AuthLayout({
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-aurora shadow-glow">
               <Sparkles className="h-5 w-5 text-background" />
             </span>
-            <span className="text-xl font-semibold tracking-tight">Aurelia</span>
+            <span className="text-xl font-semibold tracking-tight">BusinessOS</span>
           </Link>
           <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
           <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
@@ -46,3 +46,5 @@ export function AuthLayout({
     </div>
   );
 }
+
+

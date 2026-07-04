@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { loginUser } from "@/lib/auth";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -16,14 +17,23 @@ function LoginPage() {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      toast.success("Welcome back to Aurelia");
+
+    const form = new FormData(e.currentTarget);
+    const email = (form.get("email") ?? "").toString().trim();
+    const password = (form.get("password") ?? "").toString();
+
+    try {
+      await loginUser(email, password);
+      toast.success("Welcome back to BusinessOS");
       navigate({ to: "/dashboard" });
-    }, 900);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to sign in.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -32,7 +42,7 @@ function LoginPage() {
       subtitle="Sign in to your growth operating system"
       footer={
         <>
-          New to Aurelia?{" "}
+          New to BusinessOS?{" "}
           <Link to="/register" className="font-medium text-primary hover:underline">
             Create an account
           </Link>
@@ -44,7 +54,7 @@ function LoginPage() {
           <Label htmlFor="email">Email</Label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input id="email" type="email" placeholder="you@company.com" required className="pl-9" defaultValue="alex@northwind.com" />
+            <Input id="email" name="email" type="email" placeholder="you@company.com" required className="pl-9" />
           </div>
         </div>
         <div className="space-y-2">
@@ -58,11 +68,11 @@ function LoginPage() {
             <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="password"
+              name="password"
               type={show ? "text" : "password"}
               placeholder="••••••••"
               required
               className="px-9"
-              defaultValue="password"
             />
             <button
               type="button"
@@ -84,13 +94,15 @@ function LoginPage() {
         <span className="h-px flex-1 bg-border" />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <Button variant="outline" onClick={() => navigate({ to: "/dashboard" })}>
+        <Button variant="outline" onClick={() => toast.error("Social login is not available yet.")}>
           Google
         </Button>
-        <Button variant="outline" onClick={() => navigate({ to: "/dashboard" })}>
+        <Button variant="outline" onClick={() => toast.error("Social login is not available yet.")}>
           Microsoft
         </Button>
       </div>
     </AuthLayout>
   );
 }
+
+

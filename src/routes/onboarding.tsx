@@ -71,7 +71,7 @@ function Onboarding() {
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-aurora shadow-glow">
             <Sparkles className="h-4.5 w-4.5 text-background" />
           </span>
-          <span className="text-lg font-semibold tracking-tight">Aurelia</span>
+          <span className="text-lg font-semibold tracking-tight">BusinessOS</span>
         </Link>
 
         {/* Stepper */}
@@ -189,7 +189,7 @@ function Onboarding() {
                   <div>
                     <h2 className="text-xl font-semibold">Connect your data sources</h2>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Aurelia gets smarter with every connection. You can add more later.
+                      BusinessOS gets smarter with every connection. You can add more later.
                     </p>
                   </div>
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -243,7 +243,7 @@ function Onboarding() {
               Step {step + 1} of {steps.length}
             </span>
             <Button onClick={next}>
-              {step === steps.length - 1 ? "Enter Aurelia" : "Continue"}
+              {step === steps.length - 1 ? "Enter BusinessOS" : "Continue"}
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
@@ -274,3 +274,5 @@ function Chip({
     </button>
   );
 }
+
+
