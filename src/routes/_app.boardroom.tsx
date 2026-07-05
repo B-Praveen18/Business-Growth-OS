@@ -33,6 +33,7 @@ const iconMap: Record<string, typeof Crown> = {
 function Boardroom() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<any[]>([]);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -49,13 +50,12 @@ function Boardroom() {
   }, []);
 
   const send = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || sending) return;
     const currentInput = input;
     setInput("");
-    
-    // Add optimistic user message
-    setMessages(prev => [...prev, { agent: "user", text: currentInput }]);
-    
+    setSending(true);
+    setMessages(prev => [...prev, { role: "user", content: currentInput }]);
+
     try {
       const res = await sendChatMessage(currentInput);
       if (res.session && res.session.messages) {
@@ -64,7 +64,12 @@ function Boardroom() {
         setMessages(prev => [...prev, res.message]);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to send message");
+      const msg = err.message || "Failed to send message";
+      const isQuota = msg.includes("429") || msg.includes("quota") || msg.includes("rate");
+      toast.error(isQuota ? "Gemini API quota exhausted. Wait a few minutes or upgrade your plan." : msg);
+      setMessages(prev => prev.slice(0, -1)); // remove optimistic message
+    } finally {
+      setSending(false);
     }
   };
 
@@ -147,9 +152,10 @@ function Boardroom() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && send()}
-                placeholder="Pose a question to the board…"
+                placeholder={sending ? "Waiting for response…" : "Pose a question to the board…"}
+                disabled={sending}
               />
-              <Button onClick={send} size="icon">
+              <Button onClick={send} size="icon" disabled={sending}>
                 <Send className="h-4 w-4" />
               </Button>
             </div>

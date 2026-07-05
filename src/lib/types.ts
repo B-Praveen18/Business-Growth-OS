@@ -120,6 +120,7 @@ export interface ChatSession {
   _id?: string;
   companyId: string;
   userId: string;
+  agentId?: string;
   messages: ChatMessage[];
   createdAt?: string;
   updatedAt?: string;

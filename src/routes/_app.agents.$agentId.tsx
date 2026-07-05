@@ -14,10 +14,11 @@ import { MiniAreaChart } from "@/components/app/charts";
 import { agents } from "@/lib/mock-data";
 import { useEffect } from "react";
 import { getMetrics } from "@/lib/metrics-api";
+import { getChatHistory, sendChatMessage } from "@/lib/chat-api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Crown, Megaphone, TrendingUp, Wallet, Settings2, Sparkles, Send, ListChecks, Bot } from "lucide-react";
+import { Crown, Megaphone, TrendingUp, Wallet, Settings2, Sparkles, Send, ListChecks, Bot, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_app/agents/$agentId")({
   component: AgentDetail,
@@ -79,10 +80,20 @@ function AgentDetail() {
   const agent = agents.find((a) => a.id === agentId);
   const [input, setInput] = useState("");
   const [metrics, setMetrics] = useState<any[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     getMetrics().then(res => setMetrics(res.metrics || [])).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (!agentId) return;
+    setMessages([]);
+    getChatHistory(agentId)
+      .then((data: any) => setMessages(data?.session?.messages || []))
+      .catch((err: any) => toast.error(err.message || "Failed to load chat history"));
+  }, [agentId]);
 
   const revenueTrend = metrics.find(m => m.name === 'revenueTrend')?.history || [
     { month: "Jan", revenue: 312, forecast: 300, target: 320 },
@@ -113,10 +124,22 @@ function AgentDetail() {
   const Icon = iconMap[agent.id] ?? Sparkles;
   const focus = focusMap[agent.id];
 
-  const send = () => {
-    if (!input.trim()) return;
-    toast.info("Connect an AI provider to chat with this agent live.");
+  const send = async () => {
+    if (!input.trim() || sending) return;
+    const currentInput = input;
     setInput("");
+    setMessages((prev) => [...prev, { role: "user", content: currentInput, timestamp: new Date().toISOString() }]);
+    setSending(true);
+    try {
+      const res: any = await sendChatMessage(currentInput, agentId);
+      if (res?.message) {
+        setMessages((prev) => [...prev, res.message]);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send message");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -185,14 +208,40 @@ function AgentDetail() {
       <FadeIn delay={0.1}>
         <GlassCard>
           <SectionHeading title={`Ask ${agent.name}`} description="Get a focused perspective from this agent" />
+
+          {messages.length > 0 && (
+            <div className="mb-4 max-h-80 space-y-3 overflow-y-auto pr-1">
+              {messages.map((m, i) => (
+                <div key={i} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
+                  <div
+                    className={cn(
+                      "max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
+                      m.role === "user" ? "bg-primary text-primary-foreground rounded-tr-sm" : "bg-accent/40 rounded-tl-sm"
+                    )}
+                  >
+                    {m.content}
+                  </div>
+                </div>
+              ))}
+              {sending && (
+                <div className="flex justify-start">
+                  <div className="flex items-center gap-2 rounded-2xl rounded-tl-sm bg-accent/40 px-4 py-2.5 text-sm text-muted-foreground">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" /> {agent.name} is thinking…
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="flex items-center gap-2">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send()}
               placeholder={`e.g. What should ${agent.name.split(" ")[0]} prioritize this week?`}
+              disabled={sending}
             />
-            <Button onClick={send} size="icon">
+            <Button onClick={send} size="icon" disabled={sending}>
               <Send className="h-4 w-4" />
             </Button>
           </div>
