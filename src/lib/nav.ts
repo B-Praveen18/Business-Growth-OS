@@ -18,6 +18,7 @@ import {
   History,
   Settings,
   UserRound,
+  Target,
   type LucideIcon,
 } from "lucide-react";
 
@@ -56,6 +57,7 @@ export const navGroups: NavGroup[] = [
   {
     label: "Intelligence",
     items: [
+      { label: "Lead Engine", to: "/lead-engine", icon: Target, badge: "AI" },
       { label: "Competitor Analysis", to: "/competitors", icon: Swords },
       { label: "Risk Analysis", to: "/risk", icon: ShieldAlert },
       { label: "AI Recommendations", to: "/recommendations", icon: Sparkles },

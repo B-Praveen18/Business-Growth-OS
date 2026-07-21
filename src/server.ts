@@ -250,6 +250,52 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
+async function handleLeadAnalyze(request: Request): Promise<Response> {
+  try {
+    const body = await parseJsonBody(request);
+    const prompt = String(body.prompt ?? "").trim();
+    if (!prompt) return errorResponse("Missing prompt.", 422);
+
+    const apiKey = process.env.GEMINI_API_KEY ?? "";
+    if (!apiKey) return errorResponse("GEMINI_API_KEY not configured.", 503);
+
+    const { GoogleGenerativeAI } = await import("@google/generative-ai");
+    const genAI = new GoogleGenerativeAI(apiKey);
+
+    const MODEL_CHAIN = ["gemini-2.0-flash-lite", "gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro", "gemini-3-flash-preview"];
+    let text = "";
+    let lastErr: unknown;
+
+    for (const modelName of MODEL_CHAIN) {
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent(prompt);
+        text = result.response.text();
+        lastErr = undefined;
+        break;
+      } catch (e: any) {
+        lastErr = e;
+        const retryable = e?.status === 429 || e?.status === 404 || e?.status === 503;
+        if (!retryable) break;
+      }
+    }
+
+    if (lastErr) {
+      const e = lastErr as any;
+      const is429 = e?.status === 429;
+      return errorResponse(
+        is429 ? "AI quota exhausted. Please wait and try again." : "AI generation failed.",
+        is429 ? 429 : 500,
+      );
+    }
+
+    return jsonResponse({ text });
+  } catch (error) {
+    console.error("Lead analyze error:", error);
+    return errorResponse("Internal server error.", 500);
+  }
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
@@ -266,6 +312,7 @@ export default {
       if (url.pathname.startsWith("/api/competitors")) return await handleCompetitorsApi(request);
       if (url.pathname.startsWith("/api/notifications")) return await handleNotificationsApi(request);
       if (url.pathname.startsWith("/api/chat")) return await handleChatApi(request);
+      if (url.pathname === "/api/lead-analyze" && request.method === "POST") return await handleLeadAnalyze(request);
 
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);

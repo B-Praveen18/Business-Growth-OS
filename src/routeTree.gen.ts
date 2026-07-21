@@ -22,6 +22,7 @@ import { Route as AppReportsRouteImport } from './routes/_app.reports'
 import { Route as AppRecommendationsRouteImport } from './routes/_app.recommendations'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
 import { Route as AppNotificationsRouteImport } from './routes/_app.notifications'
+import { Route as AppLeadEngineRouteImport } from './routes/_app.lead-engine'
 import { Route as AppHealthRouteImport } from './routes/_app.health'
 import { Route as AppExecutiveSummaryRouteImport } from './routes/_app.executive-summary'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
@@ -95,6 +96,11 @@ const AppNotificationsRoute = AppNotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLeadEngineRoute = AppLeadEngineRouteImport.update({
+  id: '/lead-engine',
+  path: '/lead-engine',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppHealthRoute = AppHealthRouteImport.update({
   id: '/health',
   path: '/health',
@@ -149,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRoute
   '/executive-summary': typeof AppExecutiveSummaryRoute
   '/health': typeof AppHealthRoute
+  '/lead-engine': typeof AppLeadEngineRoute
   '/notifications': typeof AppNotificationsRoute
   '/profile': typeof AppProfileRoute
   '/recommendations': typeof AppRecommendationsRoute
@@ -171,6 +178,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardRoute
   '/executive-summary': typeof AppExecutiveSummaryRoute
   '/health': typeof AppHealthRoute
+  '/lead-engine': typeof AppLeadEngineRoute
   '/notifications': typeof AppNotificationsRoute
   '/profile': typeof AppProfileRoute
   '/recommendations': typeof AppRecommendationsRoute
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/executive-summary': typeof AppExecutiveSummaryRoute
   '/_app/health': typeof AppHealthRoute
+  '/_app/lead-engine': typeof AppLeadEngineRoute
   '/_app/notifications': typeof AppNotificationsRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/recommendations': typeof AppRecommendationsRoute
@@ -219,6 +228,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/executive-summary'
     | '/health'
+    | '/lead-engine'
     | '/notifications'
     | '/profile'
     | '/recommendations'
@@ -241,6 +251,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/executive-summary'
     | '/health'
+    | '/lead-engine'
     | '/notifications'
     | '/profile'
     | '/recommendations'
@@ -264,6 +275,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard'
     | '/_app/executive-summary'
     | '/_app/health'
+    | '/_app/lead-engine'
     | '/_app/notifications'
     | '/_app/profile'
     | '/_app/recommendations'
@@ -376,6 +388,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppNotificationsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/lead-engine': {
+      id: '/_app/lead-engine'
+      path: '/lead-engine'
+      fullPath: '/lead-engine'
+      preLoaderRoute: typeof AppLeadEngineRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/health': {
       id: '/_app/health'
       path: '/health'
@@ -443,6 +462,7 @@ interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppExecutiveSummaryRoute: typeof AppExecutiveSummaryRoute
   AppHealthRoute: typeof AppHealthRoute
+  AppLeadEngineRoute: typeof AppLeadEngineRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppProfileRoute: typeof AppProfileRoute
   AppRecommendationsRoute: typeof AppRecommendationsRoute
@@ -461,6 +481,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppExecutiveSummaryRoute: AppExecutiveSummaryRoute,
   AppHealthRoute: AppHealthRoute,
+  AppLeadEngineRoute: AppLeadEngineRoute,
   AppNotificationsRoute: AppNotificationsRoute,
   AppProfileRoute: AppProfileRoute,
   AppRecommendationsRoute: AppRecommendationsRoute,

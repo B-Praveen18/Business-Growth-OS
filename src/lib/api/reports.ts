@@ -11,7 +11,7 @@ export async function handleReportsApi(request: Request): Promise<Response> {
 
     if (request.method === 'GET') {
       const reports = await collection.find({ companyId }).sort({ createdAt: -1 }).toArray();
-      return jsonResponse(reports);
+      return jsonResponse({ reports });
     }
 
     if (request.method === 'POST') {

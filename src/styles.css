@@ -5,8 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Aurelia OS — AI Business Growth Operating System
- * Dark-first premium design system. All colors in oklch.
+ * Apex Growth OS — Premium AI Business Dashboard
+ * Ultra-dark glassmorphism with neon accents, aurora orbs & particle grid.
  */
 
 @theme inline {
@@ -56,78 +56,89 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter", "Geist", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, monospace;
 }
 
 :root {
   --radius: 0.9rem;
 
-  /* Dark-first: these are the dark values, used by default */
-  --background: oklch(0.16 0.015 265);
+  /* Deep space background */
+  --background: oklch(0.10 0.018 265);
   --foreground: oklch(0.97 0.004 260);
 
-  --card: oklch(0.2 0.017 265);
+  --card: oklch(0.14 0.020 265);
   --card-foreground: oklch(0.97 0.004 260);
 
-  --popover: oklch(0.185 0.017 265);
+  --popover: oklch(0.13 0.020 265);
   --popover-foreground: oklch(0.97 0.004 260);
 
-  --primary: oklch(0.7 0.16 275);
-  --primary-foreground: oklch(0.16 0.015 265);
+  /* Electric violet primary */
+  --primary: oklch(0.72 0.20 280);
+  --primary-foreground: oklch(0.10 0.018 265);
 
-  --secondary: oklch(0.26 0.02 265);
+  --secondary: oklch(0.20 0.022 265);
   --secondary-foreground: oklch(0.97 0.004 260);
 
-  --muted: oklch(0.24 0.018 265);
-  --muted-foreground: oklch(0.68 0.02 260);
+  --muted: oklch(0.19 0.018 265);
+  --muted-foreground: oklch(0.62 0.022 260);
 
-  --accent: oklch(0.28 0.03 275);
+  --accent: oklch(0.22 0.028 278);
   --accent-foreground: oklch(0.97 0.004 260);
 
-  --destructive: oklch(0.62 0.2 18);
+  --destructive: oklch(0.62 0.22 18);
   --destructive-foreground: oklch(0.98 0.004 260);
 
-  --success: oklch(0.72 0.15 155);
-  --success-foreground: oklch(0.16 0.015 265);
+  --success: oklch(0.74 0.17 155);
+  --success-foreground: oklch(0.10 0.018 265);
 
-  --warning: oklch(0.78 0.14 75);
-  --warning-foreground: oklch(0.16 0.015 265);
+  --warning: oklch(0.80 0.16 75);
+  --warning-foreground: oklch(0.10 0.018 265);
 
-  --info: oklch(0.7 0.13 230);
-  --info-foreground: oklch(0.16 0.015 265);
+  --info: oklch(0.72 0.15 225);
+  --info-foreground: oklch(0.10 0.018 265);
 
-  --border: oklch(0.3 0.02 265 / 0.6);
-  --input: oklch(0.3 0.02 265 / 0.5);
-  --ring: oklch(0.7 0.16 275);
+  --border: oklch(0.28 0.022 265 / 0.5);
+  --input: oklch(0.28 0.022 265 / 0.4);
+  --ring: oklch(0.72 0.20 280);
 
-  --chart-1: oklch(0.7 0.16 275);
-  --chart-2: oklch(0.72 0.15 200);
-  --chart-3: oklch(0.75 0.15 155);
-  --chart-4: oklch(0.78 0.14 75);
-  --chart-5: oklch(0.68 0.18 330);
+  --chart-1: oklch(0.72 0.20 280);
+  --chart-2: oklch(0.74 0.17 210);
+  --chart-3: oklch(0.76 0.17 155);
+  --chart-4: oklch(0.80 0.16 75);
+  --chart-5: oklch(0.70 0.20 330);
 
-  --sidebar: oklch(0.18 0.016 265);
-  --sidebar-foreground: oklch(0.9 0.006 260);
-  --sidebar-primary: oklch(0.7 0.16 275);
-  --sidebar-primary-foreground: oklch(0.16 0.015 265);
-  --sidebar-accent: oklch(0.26 0.025 275);
+  --sidebar: oklch(0.12 0.018 265);
+  --sidebar-foreground: oklch(0.92 0.006 260);
+  --sidebar-primary: oklch(0.72 0.20 280);
+  --sidebar-primary-foreground: oklch(0.10 0.018 265);
+  --sidebar-accent: oklch(0.20 0.028 278);
   --sidebar-accent-foreground: oklch(0.97 0.004 260);
-  --sidebar-border: oklch(0.3 0.02 265 / 0.5);
-  --sidebar-ring: oklch(0.7 0.16 275);
+  --sidebar-border: oklch(0.28 0.022 265 / 0.4);
+  --sidebar-ring: oklch(0.72 0.20 280);
 
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, oklch(0.7 0.16 275), oklch(0.68 0.15 320));
-  --gradient-aurora: linear-gradient(135deg, oklch(0.7 0.16 275) 0%, oklch(0.7 0.14 210) 50%, oklch(0.74 0.14 160) 100%);
-  --gradient-surface: linear-gradient(160deg, oklch(0.23 0.02 265 / 0.8), oklch(0.18 0.016 265 / 0.6));
-  --gradient-glow: radial-gradient(60% 60% at 50% 0%, oklch(0.7 0.16 275 / 0.25), transparent 70%);
+  /* === PREMIUM GRADIENT SYSTEM === */
+  --gradient-primary: linear-gradient(135deg, oklch(0.72 0.20 280), oklch(0.70 0.18 330));
+  --gradient-aurora: linear-gradient(135deg, oklch(0.72 0.20 280) 0%, oklch(0.72 0.17 215) 50%, oklch(0.76 0.17 155) 100%);
+  --gradient-neon: linear-gradient(135deg, oklch(0.72 0.20 280) 0%, oklch(0.70 0.20 330) 100%);
+  --gradient-cyan: linear-gradient(135deg, oklch(0.72 0.17 215) 0%, oklch(0.76 0.17 155) 100%);
+  --gradient-surface: linear-gradient(160deg, oklch(0.17 0.022 265 / 0.85), oklch(0.12 0.018 265 / 0.65));
+  --gradient-card-edge: linear-gradient(90deg, oklch(0.72 0.20 280 / 0.6), oklch(0.70 0.18 330 / 0.4), transparent);
+  --gradient-glow: radial-gradient(60% 60% at 50% 0%, oklch(0.72 0.20 280 / 0.30), transparent 70%);
+  --gradient-mesh: radial-gradient(ellipse at 20% 50%, oklch(0.72 0.20 280 / 0.08) 0%, transparent 50%),
+                   radial-gradient(ellipse at 80% 20%, oklch(0.70 0.18 330 / 0.06) 0%, transparent 50%),
+                   radial-gradient(ellipse at 60% 80%, oklch(0.72 0.17 215 / 0.07) 0%, transparent 50%);
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.3);
-  --shadow-md: 0 8px 24px -8px oklch(0 0 0 / 0.5);
-  --shadow-lg: 0 20px 50px -12px oklch(0 0 0 / 0.6);
-  --shadow-glow: 0 0 40px -8px oklch(0.7 0.16 275 / 0.35);
+  /* === NEON GLOW SHADOWS === */
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.4);
+  --shadow-md: 0 8px 24px -8px oklch(0 0 0 / 0.6);
+  --shadow-lg: 0 20px 50px -12px oklch(0 0 0 / 0.7);
+  --shadow-glow: 0 0 40px -8px oklch(0.72 0.20 280 / 0.45);
+  --shadow-glow-sm: 0 0 20px -6px oklch(0.72 0.20 280 / 0.35);
+  --shadow-glow-cyan: 0 0 30px -8px oklch(0.72 0.17 215 / 0.40);
+  --shadow-neon: 0 0 0 1px oklch(0.72 0.20 280 / 0.3), 0 0 20px oklch(0.72 0.20 280 / 0.15);
+  --shadow-card-hover: 0 16px 40px -12px oklch(0 0 0 / 0.7), 0 0 0 1px oklch(0.72 0.20 280 / 0.18);
 }
 
 @layer base {
@@ -145,46 +156,63 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    background-image: var(--gradient-mesh);
   }
 
   ::selection {
-    background: oklch(0.7 0.16 275 / 0.3);
+    background: oklch(0.72 0.20 280 / 0.35);
   }
 
-  /* Custom scrollbar */
+  /* Premium scrollbar */
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: oklch(0.35 0.02 265 / 0.6);
+    background: linear-gradient(180deg, oklch(0.72 0.20 280 / 0.5), oklch(0.70 0.18 330 / 0.4));
     border-radius: 999px;
-    border: 2px solid transparent;
-    background-clip: content-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: oklch(0.45 0.03 265 / 0.8);
-    background-clip: content-box;
+    background: linear-gradient(180deg, oklch(0.72 0.20 280 / 0.8), oklch(0.70 0.18 330 / 0.7));
   }
 }
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
 
 @utility glass {
   background: var(--gradient-surface);
-  backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid oklch(1 0 0 / 0.06);
+  backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid oklch(1 0 0 / 0.065);
 }
 
 @utility glass-strong {
-  background: oklch(0.22 0.018 265 / 0.7);
-  backdrop-filter: blur(28px) saturate(160%);
-  border: 1px solid oklch(1 0 0 / 0.08);
+  background: oklch(0.16 0.022 265 / 0.80);
+  backdrop-filter: blur(32px) saturate(170%);
+  border: 1px solid oklch(1 0 0 / 0.09);
+}
+
+@utility glass-card {
+  background: linear-gradient(160deg, oklch(0.18 0.022 265 / 0.9), oklch(0.13 0.018 265 / 0.7));
+  backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid oklch(1 0 0 / 0.07);
+  position: relative;
+  overflow: hidden;
 }
 
 @utility text-gradient {
   background: var(--gradient-aurora);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility text-gradient-neon {
+  background: var(--gradient-neon);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -198,35 +226,139 @@
   background-image: var(--gradient-aurora);
 }
 
+@utility bg-gradient-neon {
+  background-image: var(--gradient-neon);
+}
+
 @utility shadow-glow {
   box-shadow: var(--shadow-glow);
+}
+
+@utility shadow-glow-sm {
+  box-shadow: var(--shadow-glow-sm);
 }
 
 @utility shadow-elegant {
   box-shadow: var(--shadow-lg);
 }
 
+@utility neon-border {
+  border: 1px solid oklch(0.72 0.20 280 / 0.5);
+  box-shadow: 0 0 0 1px oklch(0.72 0.20 280 / 0.15) inset, var(--shadow-glow-sm);
+}
+
+/* ============================================================
+   KEYFRAME ANIMATIONS
+   ============================================================ */
+
+/* Aurora orb drift */
 @keyframes aurora-drift {
-  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
-  50% { transform: translate(4%, -6%) scale(1.1); opacity: 0.9; }
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+  33%       { transform: translate(3%, -5%) scale(1.08); opacity: 0.8; }
+  66%       { transform: translate(-2%, 4%) scale(0.95); opacity: 0.6; }
 }
 
+@keyframes aurora-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+  40%       { transform: translate(-4%, 6%) scale(1.12); opacity: 0.7; }
+  80%       { transform: translate(5%, -3%) scale(0.92); opacity: 0.5; }
+}
+
+@keyframes aurora-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1.05); opacity: 0.35; }
+  50%       { transform: translate(6%, -8%) scale(0.9); opacity: 0.65; }
+}
+
+/* Slow float */
 @keyframes float-slow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-14px); }
 }
 
+/* Scan line */
+@keyframes scan-line {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+/* Shimmer sweep */
 @keyframes shimmer {
   100% { transform: translateX(100%); }
 }
 
-.animate-aurora {
-  animation: aurora-drift 14s ease-in-out infinite;
+/* Neon pulse ring */
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  70%  { transform: scale(1.6); opacity: 0;   }
+  100% { transform: scale(1.6); opacity: 0;   }
 }
 
-.animate-float {
-  animation: float-slow 8s ease-in-out infinite;
+/* Data flow dots */
+@keyframes data-flow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
+
+/* Orbit ring */
+@keyframes orbit {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Card edge shimmer */
+@keyframes edge-shine {
+  0%   { opacity: 0; left: -60%; }
+  50%  { opacity: 1; }
+  100% { opacity: 0; left: 110%; }
+}
+
+/* Glow breathe */
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.5; filter: blur(40px); }
+  50%       { opacity: 0.85; filter: blur(60px); }
+}
+
+/* Status dot pulse */
+@keyframes dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 oklch(0.74 0.17 155 / 0.7); }
+  50%       { box-shadow: 0 0 0 5px oklch(0.74 0.17 155 / 0); }
+}
+
+/* Neon flicker */
+@keyframes neon-flicker {
+  0%, 100% { opacity: 1; }
+  92%      { opacity: 1; }
+  93%      { opacity: 0.8; }
+  94%      { opacity: 1; }
+  96%      { opacity: 0.7; }
+  97%      { opacity: 1; }
+}
+
+/* ============================================================
+   ANIMATION CLASSES
+   ============================================================ */
+
+.animate-aurora        { animation: aurora-drift   18s ease-in-out infinite; }
+.animate-aurora-2      { animation: aurora-drift-2 22s ease-in-out infinite; }
+.animate-aurora-3      { animation: aurora-drift-3 28s ease-in-out infinite; }
+.animate-float         { animation: float-slow  10s ease-in-out infinite; }
+.animate-scan-line     { animation: scan-line   12s linear     infinite; }
+.animate-pulse-ring    { animation: pulse-ring   2s ease-out   infinite; }
+.animate-orbit         { animation: orbit       20s linear     infinite; }
+.animate-glow-breathe  { animation: glow-breathe  6s ease-in-out infinite; }
+.animate-dot-pulse     { animation: dot-pulse     2s ease-in-out infinite; }
+.animate-neon-flicker  { animation: neon-flicker 10s ease-in-out infinite; }
+.animate-data-flow     {
+  background-size: 200% 200%;
+  animation: data-flow 4s ease infinite;
+}
+
+/* ============================================================
+   SHIMMER SKELETON
+   ============================================================ */
 
 .shimmer {
   position: relative;
@@ -237,6 +369,41 @@
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.06), transparent);
-  animation: shimmer 1.8s infinite;
+  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.05), transparent);
+  animation: shimmer 2s infinite;
+}
+
+/* ============================================================
+   CARD EDGE HIGHLIGHT
+   ============================================================ */
+
+.card-edge::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gradient-card-edge);
+  pointer-events: none;
+}
+
+/* ============================================================
+   PARTICLE GRID BACKGROUND
+   ============================================================ */
+
+.particle-grid {
+  background-image:
+    radial-gradient(circle, oklch(0.72 0.20 280 / 0.15) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ============================================================
+   NEON NAV ACTIVE ITEM
+   ============================================================ */
+
+.nav-active-glow {
+  background: linear-gradient(90deg, oklch(0.72 0.20 280 / 0.18), oklch(0.72 0.20 280 / 0.05));
+  border-left: 2px solid oklch(0.72 0.20 280 / 0.9);
+  box-shadow: inset 0 0 20px oklch(0.72 0.20 280 / 0.06);
 }

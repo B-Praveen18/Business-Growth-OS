@@ -11,7 +11,7 @@ export async function handleRisksApi(request: Request): Promise<Response> {
 
     if (request.method === 'GET') {
       const risks = await collection.find({ companyId }).toArray();
-      return jsonResponse(risks);
+      return jsonResponse({ risks });
     }
 
     if (request.method === 'POST') {

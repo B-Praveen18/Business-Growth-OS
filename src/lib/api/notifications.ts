@@ -10,7 +10,7 @@ export async function handleNotificationsApi(request: Request): Promise<Response
 
     if (request.method === 'GET') {
       const notifications = await collection.find({ userId }).sort({ createdAt: -1 }).toArray();
-      return jsonResponse(notifications);
+      return jsonResponse({ notifications });
     }
 
     if (request.method === 'PUT') {

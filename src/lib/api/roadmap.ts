@@ -11,7 +11,7 @@ export async function handleRoadmapApi(request: Request): Promise<Response> {
 
     if (request.method === 'GET') {
       const items = await collection.find({ companyId }).sort({ createdAt: 1 }).toArray();
-      return jsonResponse(items);
+      return jsonResponse({ items });
     }
 
     if (request.method === 'POST') {

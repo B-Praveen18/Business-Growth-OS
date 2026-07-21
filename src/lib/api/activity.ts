@@ -13,7 +13,7 @@ export async function handleActivityApi(request: Request): Promise<Response> {
         .limit(50)
         .toArray();
         
-      return jsonResponse(activities);
+      return jsonResponse({ activity: activities });
     }
 
     return errorResponse('Method not allowed', 405);

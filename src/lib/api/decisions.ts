@@ -11,7 +11,7 @@ export async function handleDecisionsApi(request: Request): Promise<Response> {
 
     if (request.method === 'GET') {
       const decisions = await collection.find({ companyId }).sort({ createdAt: -1 }).toArray();
-      return jsonResponse(decisions);
+      return jsonResponse({ decisions });
     }
 
     if (request.method === 'POST') {

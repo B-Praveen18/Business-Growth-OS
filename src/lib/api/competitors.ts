@@ -11,7 +11,7 @@ export async function handleCompetitorsApi(request: Request): Promise<Response> 
 
     if (request.method === 'GET') {
       const competitors = await collection.find({ companyId }).toArray();
-      return jsonResponse(competitors);
+      return jsonResponse({ competitors });
     }
 
     if (request.method === 'POST') {

@@ -12,7 +12,7 @@ export async function handleMetricsApi(request: Request): Promise<Response> {
 
     if (request.method === 'GET') {
       const metrics = await collection.find({ companyId }).sort({ createdAt: -1 }).toArray();
-      return jsonResponse(metrics);
+      return jsonResponse({ metrics });
     }
 
     if (request.method === 'POST') {
